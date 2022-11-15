@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  validator:
+    build:
+      dockerfile: Dockerfile
+      context: app/.
+    env_file:
+      - .env
+    restart: unless-stopped
+    expose:
+      - "9090"
+      - "1317"
+      - "26656"
+      - "26657"
+    ports:
+      - "9090:9090"
+      - "1317:1317"
+      - "26656:26656"
+      - "26657:26657"
+    volumes:
+      - ./app/custom-entrypoint.sh:/opt/custom-entrypoint.sh
+      - ./app/helpers.sh:/opt/helpers.sh
+      - celestia-app:/root/.celestia-app
+volumes:
+  celestia-app:
