@@ -7,7 +7,14 @@ _init_p2p() {
     rm -rf networks
     rm -f $HOME/.celestia-app/config/genesis.json
     git clone https://github.com/celestiaorg/networks.git
-    celestia-appd init "$CELESTIA_NODE_NAME" --chain-id mamaki
+    while true; do
+        read -p "Do you want to import a previously created node mnemonics? " yn
+        case $yn in
+            [Yy]* ) celestia-appd init "$CELESTIA_NODE_NAME" --chain-id mamaki --recover; break;;
+            [Nn]* ) celestia-appd init "$CELESTIA_NODE_NAME" --chain-id mamaki; break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
     cp $HOME/networks/mamaki/genesis.json $HOME/.celestia-app/config
     if [ -z "${BOOTSTRAP_PEERS}" ]; then
        BOOTSTRAP_PEERS=$(curl -s https://rpc-mamaki.pops.one/net_info | jq -r '.result.peers[] | .url + ","' | tr -d '\n' | sed 's/.$//')
@@ -41,7 +48,7 @@ _download_snapshot() {
 _init_wallet() {
     celestia-appd config keyring-backend test
     while true; do
-        read -p "Did you want to import a previously created wallet? " yn
+        read -p "Do you want to import a previously created wallet? " yn
         case $yn in
             [Yy]* ) celestia-appd keys add $VALIDATOR_WALLET_NAME --recover; break;;
             [Nn]* ) celestia-appd keys add $VALIDATOR_WALLET_NAME; break;;
