@@ -17,6 +17,10 @@ services:
       - "1317:1317"
       - "26656:26656"
       - "26657:26657"
+    logging:
+      options:
+        max-size: "12m"
+        max-file: "5"
     volumes:
       - ./app/custom-entrypoint.sh:/opt/custom-entrypoint.sh
       - ./app/helpers.sh:/opt/helpers.sh
