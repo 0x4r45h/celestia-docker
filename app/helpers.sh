@@ -28,6 +28,8 @@ elif [ "$1" = 'validator:connect' ]; then
 _validator_connect
 elif [ "$1" = 'validator:sync-info' ]; then
 curl -s localhost:26657/status | jq .result | jq .sync_info
+elif [ "$1" = 'validator:logs' ]; then
+journalctl -u celestia-appd.service -f
 else
   /bin/celestia-appd $@
 fi
