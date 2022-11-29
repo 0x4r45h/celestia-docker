@@ -8,6 +8,7 @@ _init_p2p() {
     rm -f $HOME/.celestia-app/config/genesis.json
     git clone https://github.com/celestiaorg/networks.git
     while true; do
+      # in case you want recover priv_validator_key.json through mnemonics
         read -p "Do you want to import a previously created node mnemonics? " yn
         case $yn in
             [Yy]* ) celestia-appd init "$CELESTIA_NODE_NAME" --chain-id mamaki --recover; break;;
@@ -21,6 +22,8 @@ _init_p2p() {
     fi
     echo $BOOTSTRAP_PEERS
     sed -i.bak -e "s/^bootstrap-peers *=.*/bootstrap-peers = \"$BOOTSTRAP_PEERS\"/" $HOME/.celestia-app/config/config.toml
+    # Make the node accessible outside of container
+    sed -i.bak -e "s/^laddr = \"tcp:\/\/127.0.0.1:26657\"/laddr = \"tcp:\/\/0.0.0.0:26657\"/" $HOME/.celestia-app/config/config.toml
     # Configure validator mode
     sed -i.bak -e "s/^mode *=.*/mode = \"validator\"/" $HOME/.celestia-app/config/config.toml
 
