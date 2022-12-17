@@ -21,8 +21,6 @@ _init_p2p() {
     sed -i -e "s/^seed_mode *=.*/seed_mode = \"$SEED_MODE\"/" $HOME/.celestia-app/config/config.toml
     # Make the node accessible outside of container
     sed -i.bak -e "s/^laddr = \"tcp:\/\/127.0.0.1:26657\"/laddr = \"tcp:\/\/0.0.0.0:26657\"/" $HOME/.celestia-app/config/config.toml
-    # Configure validator mode
-    sed -i.bak -e "s/^mode *=.*/mode = \"validator\"/" $HOME/.celestia-app/config/config.toml
 
 }
 _config_pruning() {
