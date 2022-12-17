@@ -1,4 +1,4 @@
-FROM arashidos/celestia-app:v0.6.0
+FROM arashidos/celestia-app:mocha
 RUN  apk add --no-cache git curl jq
 COPY  custom-entrypoint.sh /opt/custom-entrypoint.sh
 COPY  helpers.sh /opt/helpers.sh

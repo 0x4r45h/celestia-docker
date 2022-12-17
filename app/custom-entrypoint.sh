@@ -11,17 +11,14 @@ _init_p2p() {
       # in case you want recover priv_validator_key.json through mnemonics
         read -p "Do you want to import a previously created node mnemonics? " yn
         case $yn in
-            [Yy]* ) celestia-appd init "$CELESTIA_NODE_NAME" --chain-id mamaki --recover; break;;
-            [Nn]* ) celestia-appd init "$CELESTIA_NODE_NAME" --chain-id mamaki; break;;
+            [Yy]* ) celestia-appd init "$CELESTIA_NODE_NAME" --chain-id mocha --recover; break;;
+            [Nn]* ) celestia-appd init "$CELESTIA_NODE_NAME" --chain-id mocha; break;;
             * ) echo "Please answer yes or no.";;
         esac
     done
-    cp $HOME/networks/mamaki/genesis.json $HOME/.celestia-app/config
-    if [ -z "${BOOTSTRAP_PEERS}" ]; then
-       BOOTSTRAP_PEERS=$(curl -s https://rpc-mamaki.pops.one/net_info | jq -r '.result.peers[] | .url + ","' | tr -d '\n' | sed 's/.$//')
-    fi
-    echo $BOOTSTRAP_PEERS
-    sed -i.bak -e "s/^bootstrap-peers *=.*/bootstrap-peers = \"$BOOTSTRAP_PEERS\"/" $HOME/.celestia-app/config/config.toml
+    cp $HOME/networks/mocha/genesis.json $HOME/.celestia-app/config
+    sed -i -e 's|^seeds *=.*|seeds = "'$SEEDS'"|; s|^persistent_peers *=.*|persistent_peers = "'$PEERS'"|' $HOME/.celestia-app/config/config.toml
+    sed -i -e "s/^seed_mode *=.*/seed_mode = \"$SEED_MODE\"/" $HOME/.celestia-app/config/config.toml
     # Make the node accessible outside of container
     sed -i.bak -e "s/^laddr = \"tcp:\/\/127.0.0.1:26657\"/laddr = \"tcp:\/\/0.0.0.0:26657\"/" $HOME/.celestia-app/config/config.toml
     # Configure validator mode
@@ -44,7 +41,7 @@ _download_snapshot() {
   rm -rf ~/.celestia-app/data
   mkdir -p ~/.celestia-app/data
   SNAP_NAME=$(curl -s https://snaps.qubelabs.io/celestia/ |
-    egrep -o ">mamaki.*tar" | tr -d ">")
+    egrep -o ">mocha.*tar" | tr -d ">")
   wget -O - https://snaps.qubelabs.io/celestia/${SNAP_NAME} | tar xf - \
     -C ~/.celestia-app/data/
 }
@@ -72,7 +69,7 @@ _validator_connect() {
       --amount=1000000utia \
       --pubkey=$(celestia-appd tendermint show-validator) \
       --moniker=$MONIKER \
-      --chain-id=mamaki \
+      --chain-id=mocha \
       --commission-rate=0.1 \
       --commission-max-rate=0.2 \
       --commission-max-change-rate=0.01 \

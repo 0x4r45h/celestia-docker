@@ -28,11 +28,11 @@ services:
       - ./app/helpers.sh:/opt/helpers.sh
       - celestia-app:/root/.celestia-app
   bridge:
-    image: arashidos/celestia-node:v0.3.0-rc2
+    image: ghcr.io/celestiaorg/celestia-node:0.6.0
     env_file:
       - .env
     restart: unless-stopped
-    command: "celestia bridge start --core.grpc $BRIDGE_CORE_GRPC --core.remote $BRIDGE_CORE_REMOTE --keyring.accname $BRIDGE_KEY_RING_ACC_NAME"
+    command: "celestia bridge start --core.grpc.port $BRIDGE_CORE_GRPC_PORT --core.ip $BRIDGE_CORE_IP --keyring.accname $BRIDGE_KEY_RING_ACC_NAME"
     logging:
       options:
         max-size: "12m"
