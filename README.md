@@ -37,6 +37,11 @@ docker compose exec validator /opt/helpers.sh validator:sync-info
 docker compose exec validator /opt/helpers.sh validator:connect
 ```
 
+### Delegate to a Validator
+```shell
+docker compose exec validator /opt/helpers.sh validator:delegate <celestiavaloper address> <amount>utia
+```
+
 ## Bridge Node
 To run a bridge node alongside your validator, first run the bridge in foreground to initialize required files,a new wallet is generated automatically:
 ```shell
