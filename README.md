@@ -10,6 +10,10 @@ copy environment file sample to .env and set your configs, if you don't have a w
 ```shell
 cp .env.sample .env
 ```
+### Build Images
+```shell
+docker compose pull & docker compose build
+```
 ### Initialize configs
 ```shell
 docker compose run --rm validator init

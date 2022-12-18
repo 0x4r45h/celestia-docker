@@ -17,12 +17,15 @@ _init_p2p() {
         esac
     done
     cp $HOME/networks/mocha/genesis.json $HOME/.celestia-app/config
-    sed -i -e 's|^seeds *=.*|seeds = "'$SEEDS'"|; s|^persistent_peers *=.*|persistent_peers = "'$PEERS'"|' $HOME/.celestia-app/config/config.toml
-    sed -i -e "s/^seed_mode *=.*/seed_mode = \"$SEED_MODE\"/" $HOME/.celestia-app/config/config.toml
-    # Make the node accessible outside of container
-    sed -i.bak -e "s/^laddr = \"tcp:\/\/127.0.0.1:26657\"/laddr = \"tcp:\/\/0.0.0.0:26657\"/" $HOME/.celestia-app/config/config.toml
-
 }
+_set_configs() {
+
+      sed -i -e 's|^seeds *=.*|seeds = "'$SEEDS'"|; s|^persistent_peers *=.*|persistent_peers = "'$PEERS'"|' $HOME/.celestia-app/config/config.toml
+      sed -i -e "s/^seed_mode *=.*/seed_mode = \"$SEED_MODE\"/" $HOME/.celestia-app/config/config.toml
+      # Make the node accessible outside of container
+      sed -i.bak -e "s/^laddr = \"tcp:\/\/127.0.0.1:26657\"/laddr = \"tcp:\/\/0.0.0.0:26657\"/" $HOME/.celestia-app/config/config.toml
+}
+
 _config_pruning() {
   PRUNING="custom"
   PRUNING_KEEP_RECENT="100"
@@ -65,7 +68,7 @@ _validator_connect() {
 
     celestia-appd tx staking create-validator \
       --amount=1000000utia \
-      --pubkey=$(celestia-appd tendermint show-validator) \
+      --pubkey="$(celestia-appd tendermint show-validator)" \
       --moniker=$MONIKER \
       --chain-id=mocha \
       --commission-rate=0.1 \
@@ -78,6 +81,7 @@ _validator_connect() {
 
 _init() {
     _init_p2p
+    _set_configs
     _config_pruning
     _init_wallet
 while true; do
@@ -97,7 +101,6 @@ while true; do
     esac
 done
 
-
 }
 if [ "$1" = 'debug' ]; then
   trap : TERM INT; sleep infinity & wait
@@ -107,6 +110,10 @@ elif [ "$1" = 'wallet:balance' ]; then
 _get_wallet_balance
 elif [ "$1" = 'validator:connect' ]; then
 _validator_connect
+elif [ "$1" = 'start' ]; then
+  #always update configs before start to apply changes in .env file
+_set_configs
+/bin/celestia-appd start
 else
-  /bin/celestia-appd $@
+  /bin/celestia-appd "$@"
 fi
