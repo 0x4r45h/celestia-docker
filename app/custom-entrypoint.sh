@@ -19,7 +19,10 @@ _init_p2p() {
     cp $HOME/networks/mocha/genesis.json $HOME/.celestia-app/config
 }
 _set_configs() {
-
+      if [ -z "${PEERS}" ]; then
+        # TODO : check the correctness of this with team
+         PEERS=$(curl -s https://rpc-mocha.pops.one/net_info | jq -r '.result.peers[] | select(.remote_ip | test("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")) | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr | split(":")[-1])"' | tr '\n' ',' | sed 's/,$//')
+      fi
       sed -i -e 's|^seeds *=.*|seeds = "'$SEEDS'"|; s|^persistent_peers *=.*|persistent_peers = "'$PEERS'"|' $HOME/.celestia-app/config/config.toml
       sed -i -e "s/^seed_mode *=.*/seed_mode = \"$SEED_MODE\"/" $HOME/.celestia-app/config/config.toml
       # Make the node accessible outside of container
@@ -71,6 +74,8 @@ _validator_connect() {
       --pubkey="$(celestia-appd tendermint show-validator)" \
       --moniker=$MONIKER \
       --chain-id=mocha \
+      --evm-address=$EVM_ADDRESS \
+      --orchestrator-address=$ORCHESTRATOR_ADDRESS \
       --commission-rate=0.1 \
       --commission-max-rate=0.2 \
       --commission-max-change-rate=0.01 \
