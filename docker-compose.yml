@@ -43,8 +43,25 @@ services:
       default:
     volumes:
       - celestia-bridge-node:/root/.celestia-bridge-mocha
+  light:
+    image: ghcr.io/celestiaorg/celestia-node:0.6.1
+    env_file:
+      - .env
+    environment:
+      - NODE_TYPE=light
+    restart: unless-stopped
+    command: "celestia light start --core.ip $LIGHT_CORE_IP --keyring.accname $LIGHT_KEY_RING_ACC_NAME --gateway --gateway.addr 127.0.0.1 --gateway.port 26659 --p2p.network mocha"
+    logging:
+      options:
+        max-size: "12m"
+        max-file: "5"
+    networks:
+      default:
+    volumes:
+      - celestia-light-node:/root/.celestia-light-mocha
 volumes:
   celestia-app:
   celestia-bridge-node:
+  celestia-light-node:
 networks:
   default:
