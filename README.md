@@ -53,7 +53,7 @@ if you want to stick with generated account, write down mnemonic codes somewhere
 docker compose up -d bridge
 ```
 #### Using same wallet as validator for bridge node
-copy keys from validators volume to host, then copy it to the bridges volume   
+copy keys from validators volume   
 ```shell
 docker run --rm \
 -v celestia-docker_celestia-app:/src \
@@ -67,3 +67,26 @@ run bridge node in background
 docker compose up -d bridge
 ```
 
+## Light Node
+Initialize light node
+```shell
+docker compose run --rm light celestia light init && docker compose run --rm light celestia light start 
+```
+#### Using newly generated account
+if you want to stick with generated account, write down mnemonic codes somewhere safe, then run light node in background, otherwise if you want to use validator wallet, skip to next part
+```shell
+docker compose up -d light
+```
+#### Using same wallet as validator for light node
+copy keys from validators volume
+```shell
+docker run --rm \
+-v celestia-docker_celestia-app:/src \
+-v celestia-docker_celestia-light-node:/dst \
+busybox sh -c "cp -a /src/keyring-test /dst/keys/"
+```
+**IMPORTANT** in `.env` file change `LIGHT_KEY_RING_ACC_NAME` value same as `VALIDATOR_WALLET_NAME`
+
+run light node in background
+```shell
+docker compose up -d light
